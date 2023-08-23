@@ -7,12 +7,15 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SignUpTests extends BaseTest {
 
     String email = faker.internet().emailAddress();
     String password = faker.internet().password();
     String name = faker.name().username();
-    boolean isUserCreated = false;
+    List<String> userTokens = new ArrayList<>();
 
     @Test
     @DisplayName("Пользователь может успешно зарегисрироваться c уникальными данными")
@@ -21,7 +24,7 @@ public class SignUpTests extends BaseTest {
         populateSignUpFieldsAndClickSignUpButton(name, email, password);
         loginPage.waitForLogInPageLoad();
         System.out.println("почта" + email + "пароль" + password);
-        isUserCreated = true;
+        userTokens.add(getAccessToken(email, password));
         Assert.assertEquals(LOGIN_URL, driver.getCurrentUrl());//подвердить пользователь перенаправлен на страницу входа
     }
 
@@ -36,10 +39,12 @@ public class SignUpTests extends BaseTest {
 
     @After
     public void deleteUser(){
-        if (isUserCreated){
+        if (!userTokens.isEmpty()){
             RestAssured.baseURI = PAGE_URL;
-            String token = getAccessToken(email, password);
-            deleteUser(token);
+            for (String token : userTokens) {
+                deleteUser(token);
+                System.out.println("Deleted created user with token: " + token);
+            }
         }else{
             System.out.println("No user was created. Skipping deletion.");
         }

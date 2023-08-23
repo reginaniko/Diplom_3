@@ -16,7 +16,7 @@ import static io.restassured.RestAssured.given;
 public class BaseTest {
     protected WebDriver driver;
     //выбрать браузер (CHROME / YANDEX / FIREFOX)
-    private final BrowserDriverFactory.BrowserType browserType = BrowserDriverFactory.BrowserType.CHROME;
+    private final BrowserDriverFactory.BrowserType browserType = BrowserDriverFactory.BrowserType.valueOf(System.getProperty("browser", "CHROME").toUpperCase());
 
     public final String PAGE_URL = "https://stellarburgers.nomoreparties.site";
     public final String LOGIN_URL = "https://stellarburgers.nomoreparties.site/login";
